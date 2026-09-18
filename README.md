@@ -1,12 +1,6 @@
 # xmip-core-authorize-artifact
 
-Authorize by artifact: decides by what this identity may do to this named artifact; a transport-layer policy. A technology of
-[xmip-core-authorize](https://github.com/IlleNilsson/xmip-core-authorize).
-
-Declared and not yet written; `architecture.toml` carries the maturity. When
-it is written it implements `Authorizer`, one mechanism at one gate (ADR-0050).
-What it may depend on is `repository-model.md` section 4 and ADR-0044: its
-capability, and no sibling.
+Artifact authorization: what this identity may do to this named artifact — post into a Receive Location, run in a Process, be presented through a Send Location — from a list of grants; a transport-layer policy. A technology of [xmip-core-authorize](https://github.com/IlleNilsson/xmip-core-authorize).
 
 ## Toolchain
 
