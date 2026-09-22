@@ -41,7 +41,8 @@ impl fmt::Display for Subject {
     }
 }
 
-/// An artifact's name, or every name under a prefix when it ends in `*`.
+/// An artifact's name as a pattern in the gate's one language
+/// (`authorize::pattern`): `*` stands for any run of characters.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Pattern(String);
 
@@ -53,10 +54,7 @@ impl Pattern {
 
     #[must_use]
     pub fn matches(&self, name: &str) -> bool {
-        match self.0.strip_suffix('*') {
-            Some(prefix) => name.starts_with(prefix),
-            None => self.0 == name,
-        }
+        authorize::pattern::matches(&self.0, name)
     }
 
     #[must_use]
