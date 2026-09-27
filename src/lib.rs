@@ -26,7 +26,7 @@ pub mod grant;
 
 use authorize::{Attempt, Authorizer, Decision};
 use context::IdentityFacts;
-pub use grant::{Grant, Pattern, Subject};
+pub use grant::{Grant, Pattern};
 use xcore::Layer;
 
 /// The manifest leaf, and what a denial says it was denied by.
@@ -109,6 +109,7 @@ impl Authorizer for Artifact {
 mod tests {
     use super::*;
     use authorize::Action;
+    use authorize::subject::Subject;
     use context::{Alignment, AuthenticatedIdentity, Verified};
     use xcore::{Established, PartyId, mechanism};
 
@@ -131,11 +132,8 @@ mod tests {
         Artifact::new()
             .granting(Grant::new(Subject::Party(PartyId::new(7)), "Billing").allowing(Action::Send))
             .granting(
-                Grant::new(
-                    Subject::Identity("CN=partner-x.example".into()),
-                    "partner-*",
-                )
-                .allowing(Action::Receive),
+                Grant::new(Subject::identity("CN=partner-x.example"), "partner-*")
+                    .allowing(Action::Receive),
             )
     }
 

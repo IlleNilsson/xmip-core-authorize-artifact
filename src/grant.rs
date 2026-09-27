@@ -1,45 +1,8 @@
 //! A grant: one subject, one artifact or prefix, the actions it may take there.
 
 use authorize::Action;
+use authorize::subject::Subject;
 use context::AuthenticatedIdentity;
-use std::fmt;
-use xcore::PartyId;
-
-/// Whom a grant is for.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Subject {
-    /// Every identity, resolved to a Party or not.
-    Any,
-    /// The identity whose presented value is exactly this —
-    /// `CN=partner-x.example`.
-    Identity(String),
-    /// Whatever identity resolved to this Party. A Party is a shortcut to an
-    /// identity, not a permission (ADR-0019 clause 4), so this is the grant a
-    /// partner reaching Xmip through two endpoints with two certificates gets
-    /// once rather than twice.
-    Party(PartyId),
-}
-
-impl Subject {
-    #[must_use]
-    pub fn matches(&self, identity: &AuthenticatedIdentity) -> bool {
-        match self {
-            Self::Any => true,
-            Self::Identity(value) => identity.value == *value,
-            Self::Party(party) => identity.party_id == Some(*party),
-        }
-    }
-}
-
-impl fmt::Display for Subject {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::Any => f.write_str("anyone"),
-            Self::Identity(value) => write!(f, "'{value}'"),
-            Self::Party(party) => write!(f, "party {party}"),
-        }
-    }
-}
 
 /// An artifact's name as a pattern in the gate's one language
 /// (`authorize::pattern`): `*` stands for any run of characters.
@@ -122,7 +85,7 @@ mod tests {
 
     #[test]
     fn allowing_an_action_twice_records_it_once() {
-        let grant = Grant::new(Subject::Any, "Billing")
+        let grant = Grant::new(Subject::Anyone, "Billing")
             .allowing(Action::Send)
             .allowing(Action::Send);
 
