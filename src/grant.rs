@@ -75,9 +75,9 @@ mod tests {
 
     #[test]
     fn a_prefix_pattern_names_everything_under_it_and_a_plain_one_only_itself() {
-        assert!(Pattern::new("partner-*").matches("partner-x"));
-        assert!(Pattern::new("partner-*").matches("partner-"));
-        assert!(!Pattern::new("partner-*").matches("partnerx"));
+        assert!(Pattern::new("party-*").matches("party-x"));
+        assert!(Pattern::new("party-*").matches("party-"));
+        assert!(!Pattern::new("party-*").matches("partyx"));
         assert!(Pattern::new("Billing").matches("Billing"));
         assert!(!Pattern::new("Billing").matches("Billing2"));
         assert!(Pattern::new("*").matches("anything"));
