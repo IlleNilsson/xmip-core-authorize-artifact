@@ -113,10 +113,10 @@ mod tests {
     use context::{Alignment, AuthenticatedIdentity, Verified};
     use xcore::{Established, PartyId, mechanism};
 
-    fn partner_x(party: Option<PartyId>) -> IdentityFacts {
+    fn party_x(party: Option<PartyId>) -> IdentityFacts {
         let identity = AuthenticatedIdentity::new(
             mechanism::mutual_tls(),
-            "CN=partner-x.example",
+            "CN=party-x.example",
             Established::Passed,
             Verified::Proven,
         );
@@ -132,7 +132,7 @@ mod tests {
         Artifact::new()
             .granting(Grant::new(Subject::Party(PartyId::new(7)), "Billing").allowing(Action::Send))
             .granting(
-                Grant::new(Subject::identity("CN=partner-x.example"), "partner-*")
+                Grant::new(Subject::identity("CN=party-x.example"), "party-*")
                     .allowing(Action::Receive),
             )
     }
@@ -140,7 +140,7 @@ mod tests {
     #[test]
     fn a_grant_to_the_party_admits_the_identity_that_resolved_to_it() {
         let decision = billing().decide(
-            &partner_x(Some(PartyId::new(7))),
+            &party_x(Some(PartyId::new(7))),
             &Attempt::new(Action::Send, "Billing"),
         );
 
@@ -152,14 +152,14 @@ mod tests {
         // The Party may send through Billing. Running work in it is a different
         // question, and the denial says which one was answered.
         let decision = billing().decide(
-            &partner_x(Some(PartyId::new(7))),
+            &party_x(Some(PartyId::new(7))),
             &Attempt::new(Action::Process, "Billing"),
         );
 
         assert_eq!(
             decision.map(|decision| decision.to_string()),
             Some(
-                "denied by artifact: 'CN=partner-x.example' may not process on 'Billing'; \
+                "denied by artifact: 'CN=party-x.example' may not process on 'Billing'; \
                  it may send"
                     .to_string()
             )
@@ -169,7 +169,7 @@ mod tests {
     #[test]
     fn an_artifact_no_grant_names_is_left_to_the_next_policy() {
         let decision = billing().decide(
-            &partner_x(Some(PartyId::new(7))),
+            &party_x(Some(PartyId::new(7))),
             &Attempt::new(Action::Send, "Payroll"),
         );
 
@@ -178,15 +178,15 @@ mod tests {
 
     #[test]
     fn an_identity_with_no_grant_on_a_named_artifact_is_denied_not_ignored() {
-        // Not resolved to Party 7, and the value grant covers partner-* only.
+        // Not resolved to Party 7, and the value grant covers party-* only.
         // Billing is named, so the policy has an opinion, and it is no.
-        let decision = billing().decide(&partner_x(None), &Attempt::new(Action::Send, "Billing"));
+        let decision = billing().decide(&party_x(None), &Attempt::new(Action::Send, "Billing"));
 
         assert_eq!(
             decision,
             Some(Decision::denied(
                 NAME,
-                "'CN=partner-x.example' has no grant on 'Billing'"
+                "'CN=party-x.example' has no grant on 'Billing'"
             ))
         );
     }
@@ -195,9 +195,8 @@ mod tests {
     fn a_prefix_grant_admits_by_presented_value_across_every_artifact_under_it() {
         let policy = billing();
 
-        for artifact in ["partner-x", "partner-x-orders", "partner-"] {
-            let decision =
-                policy.decide(&partner_x(None), &Attempt::new(Action::Receive, artifact));
+        for artifact in ["party-x", "party-x-orders", "party-"] {
+            let decision = policy.decide(&party_x(None), &Attempt::new(Action::Receive, artifact));
 
             assert_eq!(decision, Some(Decision::Allowed), "{artifact}");
         }
