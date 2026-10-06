@@ -3,7 +3,7 @@
 //! Artifact authorization — a technology of `xmip-core-authorize`.
 //!
 //! One policy: what this identity may do to this named artifact. The artifact
-//! is what the Attempt names — a Receive Location, an Xmip Process, a Send
+//! is what the Attempt names — a Receive Location, a Work Process, a Send
 //! Location — and the three points ask three different questions of it:
 //! whether this connection may post into it, whether this Party's work may
 //! run in it, whether Xmip may present this identity through it. A [`Grant`]
