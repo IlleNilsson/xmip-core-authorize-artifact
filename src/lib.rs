@@ -208,6 +208,6 @@ mod tests {
 
         assert_eq!(policy.name(), "artifact");
         assert_eq!(policy.layer(), Layer::Transport);
-        assert!(policy.grants().is_empty());
+        assert_eq!(policy.grants(), []);
     }
 }
