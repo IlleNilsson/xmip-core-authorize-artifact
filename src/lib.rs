@@ -141,7 +141,7 @@ mod tests {
     fn a_grant_to_the_party_admits_the_identity_that_resolved_to_it() {
         let decision = billing().decide(
             &party_x(Some(PartyId::new(7))),
-            &Attempt::new(Action::Send, "Billing"),
+            &Attempt::now(Action::Send, "Billing"),
         );
 
         assert_eq!(decision, Some(Decision::Allowed));
@@ -153,7 +153,7 @@ mod tests {
         // question, and the denial says which one was answered.
         let decision = billing().decide(
             &party_x(Some(PartyId::new(7))),
-            &Attempt::new(Action::Process, "Billing"),
+            &Attempt::now(Action::Process, "Billing"),
         );
 
         assert_eq!(
@@ -170,7 +170,7 @@ mod tests {
     fn an_artifact_no_grant_names_is_left_to_the_next_policy() {
         let decision = billing().decide(
             &party_x(Some(PartyId::new(7))),
-            &Attempt::new(Action::Send, "Payroll"),
+            &Attempt::now(Action::Send, "Payroll"),
         );
 
         assert_eq!(decision, None);
@@ -180,7 +180,7 @@ mod tests {
     fn an_identity_with_no_grant_on_a_named_artifact_is_denied_not_ignored() {
         // Not resolved to Party 7, and the value grant covers party-* only.
         // Billing is named, so the policy has an opinion, and it is no.
-        let decision = billing().decide(&party_x(None), &Attempt::new(Action::Send, "Billing"));
+        let decision = billing().decide(&party_x(None), &Attempt::now(Action::Send, "Billing"));
 
         assert_eq!(
             decision,
@@ -196,7 +196,7 @@ mod tests {
         let policy = billing();
 
         for artifact in ["party-x", "party-x-orders", "party-"] {
-            let decision = policy.decide(&party_x(None), &Attempt::new(Action::Receive, artifact));
+            let decision = policy.decide(&party_x(None), &Attempt::now(Action::Receive, artifact));
 
             assert_eq!(decision, Some(Decision::Allowed), "{artifact}");
         }
